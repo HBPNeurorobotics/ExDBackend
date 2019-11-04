@@ -133,8 +133,10 @@ class Simulation(object):
         """
         :return: the number of errors for the current simulation
         """
+        is_valid = (self.cle is not None) and self.cle.valid
+        is_error = not is_valid or self.state in ['failed', 'halted']
 
-        return 1 if not self.cle.valid or self.state in ['failed', 'halted'] else 0
+        return int(is_error)
 
     @property
     def token(self):
