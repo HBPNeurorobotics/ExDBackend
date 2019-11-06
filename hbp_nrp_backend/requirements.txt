@@ -6,10 +6,10 @@ catkin_pkg==0.2.10
 pyxb==1.2.4
 Flask-Script==2.0.5
 Flask-Migrate==1.6.0
-psycopg2==2.6.1
+psycopg2==2.7.1
 timeout-decorator==0.3.2
 urllib3[secure]==1.21.1
 ptvsd==3.0.0
 requests
-cryptography==1.9
+cryptography==2.4.2
 backports.functools_lru_cache==1.5
