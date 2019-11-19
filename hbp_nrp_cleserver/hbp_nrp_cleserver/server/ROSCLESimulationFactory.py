@@ -189,14 +189,8 @@ class ROSCLESimulationFactory(object):
 
         # distributed, multi-process launch (inline imports to avoid circular dependencies)
         else:
-            # MUSIC-based Nest distributed simulation
-            if sim_config.simulation_type is SimulationType.MUSIC_SYNC:
-                logger.info("Creating distributed MUSICLauncher object")
-                from hbp_nrp_music_interface.launch.MUSICLauncher import MUSICLauncher
-                assembly = MUSICLauncher
-
-            # non-MUSIC based Nest distributed simulation
-            elif sim_config.simulation_type is SimulationType.NEST_DIST:
+            # Nest distributed simulation
+            if sim_config.simulation_type is SimulationType.NEST_DIST:
                 logger.info("Creating distributed NestLauncher object")
                 from hbp_nrp_distributed_nest.launch.NestLauncher import NestLauncher
                 assembly = NestLauncher

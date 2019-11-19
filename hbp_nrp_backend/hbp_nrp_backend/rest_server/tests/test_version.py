@@ -32,8 +32,6 @@ import hbp_nrp_cle
 import hbp_nrp_cleserver
 import hbp_nrp_commons
 import hbp_nrp_excontrol
-import hbp_nrp_music_xml
-import hbp_nrp_music_interface
 
 import unittest
 import json
@@ -48,8 +46,7 @@ class TestVersion(RestTest):
         self.assertEqual(response.status_code, 200)
         expected_response = {'hbp_nrp_cle': str(hbp_nrp_cle.__version__), 'hbp_nrp_backend': str(hbp_nrp_backend.__version__),
                              'hbp_nrp_cleserver': str(hbp_nrp_cleserver.__version__), 'hbp_nrp_commons': str(hbp_nrp_commons.__version__),
-                             'hbp_nrp_excontrol': str(hbp_nrp_excontrol.__version__), 'hbp_nrp_music_xml': str(hbp_nrp_music_xml.__version__),
-                             'hbp_nrp_music_interface': str(hbp_nrp_music_interface.__version__)
+                             'hbp_nrp_excontrol': str(hbp_nrp_excontrol.__version__)
                             }
         erd = json.dumps(expected_response)
         self.assertEqual(response.data.strip(), erd)

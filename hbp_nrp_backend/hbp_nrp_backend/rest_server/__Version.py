@@ -38,8 +38,6 @@ import hbp_nrp_cle # pylint: disable=unused-import
 import hbp_nrp_cleserver # pylint: disable=unused-import
 import hbp_nrp_commons # pylint: disable=unused-import
 import hbp_nrp_excontrol # pylint: disable=unused-import
-import hbp_nrp_music_xml # pylint: disable=unused-import
-import hbp_nrp_music_interface # pylint: disable=unused-import
 
 # pylint: disable=R0201
 
@@ -63,11 +61,9 @@ class Version(Resource):
             'hbp_nrp_cleserver': fields.String(),
             'hbp_nrp_commons': fields.String(),
             'hbp_nrp_excontrol': fields.String(),
-            'hbp_nrp_music_xml': fields.String(),
-            'hbp_nrp_music_interface': fields.String()
         }
         required = ['hbp_nrp_cle', 'hbp_nrp_backend', 'hbp_nrp_cleserver', 'hbp_nrp_commons',
-                    'hbp_nrp_excontrol', 'hbp_nrp_music_xml', 'hbp_nrp_music_interface']
+                    'hbp_nrp_excontrol']
 
     @swagger.operation(
         notes='Gets the versions of all the backend Neurororobotics \
@@ -92,12 +88,10 @@ class Version(Resource):
         :> json string hbp_nrp_cleserver:
         :> json string hbp_nrp_commons:
         :> json string hbp_nrp_excontrol:
-        :> json string hbp_nrp_music_xml:
-        :> json string hbp_nrp_music_interface:
 
         :status 200: Success. The versions were retrieved
         """
 
         packages = ['hbp_nrp_cle', 'hbp_nrp_backend', 'hbp_nrp_cleserver', 'hbp_nrp_commons',
-                    'hbp_nrp_excontrol', 'hbp_nrp_music_xml', 'hbp_nrp_music_interface']
+                    'hbp_nrp_excontrol']
         return {name: eval(name + ".__version__") for name in packages}, 200

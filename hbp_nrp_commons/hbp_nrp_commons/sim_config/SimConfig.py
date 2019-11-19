@@ -60,7 +60,6 @@ class SimulationType(Enum):  # pragma: no cover
     NEST_DIST = 0x11000002
     SPINNAKER_SYNC = 0x11000003
     NENGO_SYNC = 0x11000004
-    MUSIC_SYNC = 0x11000005
     ROBOT_ROS_SYNC = 0x11000006
     NEST_DIRECT_SYNC = 0x11000007
 
@@ -297,8 +296,6 @@ class SimConfig(object):
                 bibi_parser.SimulationMode.SynchronousNestSimulation: SimulationType.NEST_SYNC,
                 bibi_parser.SimulationMode.SynchronousSpinnakerSimulation:
                     SimulationType.SPINNAKER_SYNC,
-                bibi_parser.SimulationMode.SynchronousMUSICNestSimulation:
-                    SimulationType.MUSIC_SYNC,
                 bibi_parser.SimulationMode.SynchronousNengoSimulation: SimulationType.NENGO_SYNC,
                 bibi_parser.SimulationMode.SynchronousRobotRosNest: SimulationType.ROBOT_ROS_SYNC,
                 bibi_parser.SimulationMode.SynchronousDirectNestSimulation:
@@ -307,10 +304,6 @@ class SimConfig(object):
         except KeyError:
             raise Exception("Unsupported multi-process simulation mode requested: {}"
                             .format(str(self._bibi_dom.mode)))
-
-        # Do not use MUSIC for single-process simulations
-        if self._num_brain_processes == 1 and self._simulation_type is SimulationType.MUSIC_SYNC:
-            self._simulation_type = SimulationType.NEST_SYNC
 
         # Rename multi-process NEST for convenience
         if self._num_brain_processes > 1 and self._simulation_type is SimulationType.NEST_SYNC:

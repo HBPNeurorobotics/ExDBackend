@@ -28,8 +28,6 @@ pipelines:
           # Concatenate all build requirements, ensure newline in between
           - (echo; cat $HBP/ExperimentControl/hbp_nrp_excontrol/requirements.txt) >> hbp_nrp_backend/requirements.txt
           - (echo; cat $HBP/CLE/hbp_nrp_cle/requirements.txt) >> hbp_nrp_backend/requirements.txt
-          - (echo; cat $HBP/BrainSimulation/hbp_nrp_music_xml/requirements.txt) >> hbp_nrp_backend/requirements.txt
-          - (echo; cat $HBP/BrainSimulation/hbp_nrp_music_interface/requirements.txt) >> hbp_nrp_backend/requirements.txt
 
           # Checkout config.ini.sample from user-scripts
           - cp $HBP/user-scripts/config_files/CLE/config.ini.sample $HBP/CLE/hbp_nrp_cle/hbp_nrp_cle/config.ini
@@ -51,7 +49,7 @@ pipelines:
           - export IGNORE_LINT='platform_venv|hbp_nrp_commons/hbp_nrp_commons/generated|hbp-flask-restful-swagger-master|migrations|nest'
           # Egg-links have to be removed because make devinstall set them up wrongly
           - pushd $VIRTUAL_ENV_PATH/lib/python2.7/site-packages && rm -f hbp-nrp-backend.egg-link hbp-nrp-cleserver.egg-link hbp-nrp-watchdog.egg-link hbp-nrp-commons.egg-link hbp-flask-restful-swagger.egg-link && popd
-          - . $VIRTUAL_ENV_PATH/bin/activate && source /opt/ros/kinetic/setup.$CURR_SHELL && echo "PYTHONPATH $PYTHONPATH" && make verify_base || { if [ -f pylint.txt ]; then echo "----------"; echo "PYLINT.TXT"; echo "----------";cat pylint.txt; fi; if [ -f pep8.txt ]; then echo "----------"; echo "PEP8.TXT"; echo "----------";cat pep8.txt; fi; exit 1; }
+          - . $VIRTUAL_ENV_PATH/bin/activate && source /opt/ros/melodic/setup.$CURR_SHELL && echo "PYTHONPATH $PYTHONPATH" && make verify_base || { if [ -f pylint.txt ]; then echo "----------"; echo "PYLINT.TXT"; echo "----------";cat pylint.txt; fi; if [ -f pep8.txt ]; then echo "----------"; echo "PEP8.TXT"; echo "----------";cat pep8.txt; fi; exit 1; }
 
           # Coverage check
           - $HBP/admin-scripts/nrp_cobertura_check coverage.xml
