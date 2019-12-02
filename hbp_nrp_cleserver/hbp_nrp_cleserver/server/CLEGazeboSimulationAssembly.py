@@ -424,7 +424,7 @@ class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
                 continue
 
             try:
-                tfm.set_transfer_function(tf.code, new_code, tf.name, tf.active)
+                tfm.set_transfer_function(tf.code, new_code, tf.name, tf.active, tf.priority)
             except tfm.TFLoadingException as loading_e:
                 logger.error(loading_e)
                 tfm.set_flawed_transfer_function(tf.code, tf.name, loading_e)
