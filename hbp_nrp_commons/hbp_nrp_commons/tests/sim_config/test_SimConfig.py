@@ -30,7 +30,7 @@ import os
 from mock import patch, Mock, MagicMock, ANY, mock_open
 from hbp_nrp_commons.MockUtil import MockUtil
 
-from hbp_nrp_commons.sim_config.SimConfig import SimConfig
+from hbp_nrp_commons.sim_config.SimConfig import SimConfig, _TF
 
 __author__ = 'Hossain Mahmud'
 
@@ -115,6 +115,19 @@ class TestSimConfig(unittest.TestCase):
 
     def test_properties(self):
         pass
+
+    def test_priority_is_int(self):
+        # test _TF priority value is always initialized to an integer
+        tf_1 = _TF("dummy_name", "dummy_code",priority=None)
+        tf_2 = _TF("dummy_name", "dummy_code", priority="string_value")
+        tf_3 = _TF("dummy_name", "dummy_code", priority=False)
+        tf_4 = _TF("dummy_name", "dummy_code", priority=3.1416)
+
+        self.assertTrue(type(tf_1.priority) == int)
+        self.assertTrue(type(tf_2.priority) == int)
+        self.assertTrue(type(tf_3.priority) == int)
+        self.assertTrue(type(tf_4.priority) == int)
+
 
 
 if __name__ == '__main__':

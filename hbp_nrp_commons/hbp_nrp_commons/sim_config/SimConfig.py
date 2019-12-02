@@ -119,18 +119,25 @@ class _TF(object):  # pragma: no cover
     """
     Model to store TF information
     """
-    def __init__(self, name, code, src=None, active=False):
+    def __init__(self, name, code, src=None, active=False, priority=0):
         """
         Initialize a transfer function object
 
         :param name: name of the transfer function
         :param code: compiled (restricted) source code of transfer function
         :param src: source code (plain text) of transfer function
+        :param active: active state of the transfer function
+        :param priority: specifies execution order of the transfer function. Transfer functions with
+        higher priority are executed first.
         """
         self.name = name
         self.code = code
         self.src = src
         self.active = active
+        try:
+            self.priority = int(priority)
+        except (ValueError, TypeError):
+            self.priority = 0
 
 
 class SimConfig(object):
@@ -331,8 +338,9 @@ class SimConfig(object):
             code = generate_tf(_tf, self.sim_dir)
             name = get_tf_name(code)
             src = _tf.src if _tf.src else None  # must be not None and not ""
+            priority = _tf.priority if _tf.priority else 0
             active = bool(_tf.active) if _tf.active else False
-            self._tfs.append(_TF(name, code, src, active))
+            self._tfs.append(_TF(name, code, src, active, priority))
 
     def _read_robot_models(self):
         """
