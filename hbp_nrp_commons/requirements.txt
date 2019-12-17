@@ -1,6 +1,6 @@
 pyxb==1.2.4
 transitions==0.4.0
-PyYAML==3.11
+PyYAML==5.1
 rospkg==1.0.38
 catkin_pkg==0.2.10
 mock==1.0.1
