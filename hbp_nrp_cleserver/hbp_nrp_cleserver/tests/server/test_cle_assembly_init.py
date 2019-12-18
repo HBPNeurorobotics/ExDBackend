@@ -30,6 +30,7 @@ from mock import patch, MagicMock, Mock
 from hbp_nrp_cleserver.server.CLEGazeboSimulationAssembly import CLEGazeboSimulationAssembly
 from hbp_nrp_cleserver.server.LuganoVizClusterGazebo import XvfbXvnError
 from hbp_nrp_cle.mocks.robotsim import MockRobotControlAdapter, MockRobotCommunicationAdapter
+from hbp_nrp_cle.mocks.externalsim.MockExternalModuleManager import MockExternalModuleManager
 import hbp_nrp_cle.tf_framework as tfm
 from hbp_nrp_cle.robotsim.RobotManager import Robot
 from hbp_nrp_commons.MockUtil import MockUtil
@@ -81,6 +82,8 @@ class SomeWeirdTFException(Exception):
 @patch("hbp_nrp_cleserver.server.CLEGazeboSimulationAssembly.os.listdir", new=Mock(return_value=[]))
 @patch("hbp_nrp_cleserver.server.GazeboSimulationAssembly.rospy", new=MagicMock())
 @patch("hbp_nrp_cleserver.server.GazeboSimulationAssembly.rosnode", new=MagicMock())
+@patch("hbp_nrp_cleserver.server.CLEGazeboSimulationAssembly.ExternalModuleManager", new=MockExternalModuleManager)
+
 class TestCLELauncherInit(unittest.TestCase):
 
     @patch("hbp_nrp_cleserver.server.GazeboSimulationAssembly.LocalGazeboServerInstance")
