@@ -37,6 +37,7 @@ from hbp_nrp_backend.storage_client_api.StorageClient import StorageClient, Mode
 from hbp_nrp_commons.sim_config.SimConfig import ResourceType
 from hbp_nrp_commons.workspace.SimUtil import SimUtil
 from hbp_nrp_cleserver.server.GazeboSimulationAssembly import GazeboSimulationAssembly
+from hbp_nrp_cle.externalsim.ExternalModuleManager import ExternalModuleManager
 from hbp_nrp_commons.ZipUtil import ZipUtil
 
 # These imports start NEST.
@@ -121,10 +122,14 @@ class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
         # load the brain
         braincontrol, braincomm, brainfile, brainconf = self._load_brain()
 
+        #load external modules
+        externalmodulearray = ExternalModuleManager()
+
         # initialize the cle server and services
         logger.info("Preparing CLE Server")
         self.cle_server.cle = self.__load_cle(robotcontrol, robotcomm, braincontrol, braincomm,
-                                              brainfile, brainconf, robot_poses, models, lights)
+                                              brainfile, brainconf, externalmodulearray,
+                                              robot_poses, models, lights)
         self.cle_server.prepare_simulation(except_hook)
 
         # load transfer functions
@@ -344,7 +349,7 @@ class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
 
     # pylint: disable=too-many-arguments
     def __load_cle(self, roscontrol, roscomm, braincontrol, braincomm,
-                   brain_file_path, neurons_config,
+                   brain_file_path, neurons_config, externalmodulearray,
                    robot_poses, models, lights):
         """
         Load the ClosedLoopEngine and initializes all interfaces
@@ -380,9 +385,9 @@ class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
         # initialize CLE
         self._notify("Initializing CLE")
 
-        cle = DeterministicClosedLoopEngine(roscontrol, roscomm,
-                                            braincontrol, braincomm,
-                                            tfmanager, timestep)
+        cle = DeterministicClosedLoopEngine(roscontrol, roscomm, braincontrol,
+                                            braincomm, tfmanager,
+                                            externalmodulearray, timestep)
 
         if brain_file_path:
             cle.initialize(brain_file_path, **neurons_config)
