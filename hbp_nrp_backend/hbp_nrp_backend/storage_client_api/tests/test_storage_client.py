@@ -275,7 +275,7 @@ class TestStorageClient(unittest.TestCase):
 
         mocked_get.side_effect = get_fake_texture_file
         res = client.get_file(
-            "fakeToken", "fakeExperiment", "fake.png", by_name=True, is_texture=True)
+            "fakeToken", "fakeExperiment", "fake.png", by_name=True, is_fileobject=True)
         self.assertIsInstance(res, Object)
 
     @patch('requests.get')
@@ -585,7 +585,7 @@ class TestStorageClient(unittest.TestCase):
         client.copy_folder_content_to_tmp("fakeToken", resources_item)
 
         self.assertTrue(client.list_files.called)
-        mocked_copy_file_content.assert_called_once_with('fakeToken', '/tmp/resources', '89857775-6215-4d53-94ee-fb6c18b9e2f8', 'fakeFileName')
+        mocked_copy_file_content.assert_called_once_with('fakeToken', '/tmp/resources', '89857775-6215-4d53-94ee-fb6c18b9e2f8', 'fakeFileName', is_fileobject=False)
 
     @patch('hbp_nrp_backend.storage_client_api.StorageClient.StorageClient.list_files')
     @patch('hbp_nrp_backend.storage_client_api.StorageClient.StorageClient.copy_folder_content_to_tmp')
@@ -791,7 +791,7 @@ class TestStorageClient(unittest.TestCase):
         mock_create_textures.assert_called()
         mock_create_material_from_textures.assert_called()
         mock_copy_file_content.assert_called_with(
-            'fake_token', '/somewhere/near/the/rainbow/materials/textures', 'fakeExperiment%2Fresources%2Ftextures', 'test2.gif', is_texture=True)
+            'fake_token', '/somewhere/near/the/rainbow/materials/textures', 'fakeExperiment%2Fresources%2Ftextures', 'test2.gif', is_fileobject=True)
 
     def test_create_material_from_textures_ok(self):
         with patch("__builtin__.open", mock_open(read_data="data")) as mocked_open:

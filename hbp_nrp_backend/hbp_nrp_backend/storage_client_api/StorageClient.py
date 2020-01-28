@@ -190,7 +190,8 @@ class StorageClient(object):
             logger.exception(err)
             raise err
 
-    def get_file(self, token, experiment, filename, by_name=False, zipped=False, is_fileobject=False):
+    def get_file(self, token, experiment, filename, by_name=False,
+                 zipped=False, is_fileobject=False):
         """
         Gets a file under an experiment based on the filename and on the filetype
         Depending on the file type we either:
@@ -563,7 +564,12 @@ class StorageClient(object):
                     SimUtil.makedirs(folder_tmp_path)
                     is_fileobject = os.path.splitext(folder_entry['name'])[1].lower() == '.h5'
                     self.copy_file_content(
-                        token, folder_tmp_path, folder_uuid, folder_entry['name'], is_fileobject=is_fileobject)
+                        token,
+                        folder_tmp_path,
+                        folder_uuid,
+                        folder_entry['name'],
+                        is_fileobject=is_fileobject
+                    )
 
     def copy_resources_folder(self, token, experiment):
         """
@@ -721,8 +727,14 @@ class StorageClient(object):
 
                     zipped = os.path.splitext(entry_to_clone['name'])[1].lower() == '.zip'
                     is_fileobject = os.path.splitext(entry_to_clone['name'])[1].lower() == '.h5'
-                    file_contents = self.get_file(token, experiment, entry_to_clone['name'],
-                                                  by_name=True, zipped=zipped, is_fileobject=is_fileobject)
+                    file_contents = self.get_file(
+                        token,
+                        experiment,
+                        entry_to_clone['name'],
+                        by_name=True,
+                        zipped=zipped,
+                        is_fileobject=is_fileobject
+                    )
 
                     file_clone.write(file_contents)
 
