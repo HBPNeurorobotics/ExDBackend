@@ -190,7 +190,8 @@ class StorageClient(object):
             logger.exception(err)
             raise err
 
-    def get_file(self, token, experiment, filename, by_name=False, zipped=False, is_texture=False):
+    def get_file(self, token, experiment, filename, by_name=False,
+                 zipped=False, is_fileobject=False):
         """
         Gets a file under an experiment based on the filename and on the filetype
         Depending on the file type we either:
@@ -201,7 +202,7 @@ class StorageClient(object):
         :param experiment: the name of the experiment
         :param filename: the name of the file to return
         :param zipped: flag denoting that "filename" is a zip file
-        :param is_texture: flag denoting that "filename" is a texture file
+        :param is_fileobject: flag denoting that "filename" is an object file
         :return: if successful, the content of the file
         """
         try:
@@ -214,7 +215,7 @@ class StorageClient(object):
 
             res = requests.get(request_url,
                                headers={'Authorization': 'Bearer ' + token},
-                               stream=is_texture)
+                               stream=is_fileobject)
 
             # TODO what about missing files? i.e. 204
             if res.status_code < 200 or res.status_code >= 300:
@@ -223,7 +224,7 @@ class StorageClient(object):
             if zipped:
                 return res.content
 
-            if is_texture:
+            if is_fileobject:
                 res.raw.decode_content = True
                 return res.raw
 
@@ -496,7 +497,7 @@ class StorageClient(object):
 
         return clone_destination
 
-    def copy_file_content(self, token, src_folder, dest_folder, filename, is_texture=False):
+    def copy_file_content(self, token, src_folder, dest_folder, filename, is_fileobject=False):
         """
         copy the content of file located in the Storage into the proper tmp folder
 
@@ -504,17 +505,17 @@ class StorageClient(object):
         :param src_folder: folder location where it will be copy from
         :param dest_folder: folder location where it will be copy to
         :param filename: name of the file to be copied.
-        :param is_texture: flag to signal a texture.
+        :param is_fileobject: flag to signal an object file.
         """
         _, ext = os.path.splitext(filename)
         # if the file is a texture we have to copy a file object, not a string
-        if is_texture:
+        if is_fileobject:
             with open(os.path.join(src_folder, filename), "wb") as texture_file:
                 shutil.copyfileobj(
                     self.get_file(
                         token,
                         dest_folder, filename,
-                        by_name=True, zipped=False, is_texture=is_texture),
+                        by_name=True, zipped=False, is_fileobject=is_fileobject),
                     texture_file
                 )
         else:
@@ -523,7 +524,7 @@ class StorageClient(object):
                     self.get_file(
                         token,
                         dest_folder, filename,
-                        by_name=True, zipped=(ext.lower() == ".zip"), is_texture=is_texture
+                        by_name=True, zipped=(ext.lower() == ".zip"), is_fileobject=is_fileobject
                     )
                 )
 
@@ -561,8 +562,14 @@ class StorageClient(object):
                 if folder_entry['type'] == 'file':
                     folder_tmp_path = str(os.path.join(self._sim_dir, folder_path))
                     SimUtil.makedirs(folder_tmp_path)
+                    is_fileobject = os.path.splitext(folder_entry['name'])[1].lower() == '.h5'
                     self.copy_file_content(
-                        token, folder_tmp_path, folder_uuid, folder_entry['name'])
+                        token,
+                        folder_tmp_path,
+                        folder_uuid,
+                        folder_entry['name'],
+                        is_fileobject=is_fileobject
+                    )
 
     def copy_resources_folder(self, token, experiment):
         """
@@ -671,7 +678,7 @@ class StorageClient(object):
                                            os.path.join(directory, 'materials', 'textures'),
                                            urllib.quote_plus(experiment + '/resources/textures'),
                                            texture['name'],
-                                           is_texture=True)
+                                           is_fileobject=True)
 
     # pylint: disable=broad-except, dangerous-default-value
     def clone_all_experiment_files(self, token, experiment, destination_dir=None, exclude=[]):
@@ -719,8 +726,15 @@ class StorageClient(object):
                 with open(dest_file_path, "w") as file_clone:
 
                     zipped = os.path.splitext(entry_to_clone['name'])[1].lower() == '.zip'
-                    file_contents = self.get_file(token, experiment, entry_to_clone['name'],
-                                                  by_name=True, zipped=zipped)
+                    is_fileobject = os.path.splitext(entry_to_clone['name'])[1].lower() == '.h5'
+                    file_contents = self.get_file(
+                        token,
+                        experiment,
+                        entry_to_clone['name'],
+                        by_name=True,
+                        zipped=zipped,
+                        is_fileobject=is_fileobject
+                    )
 
                     file_clone.write(file_contents)
 
