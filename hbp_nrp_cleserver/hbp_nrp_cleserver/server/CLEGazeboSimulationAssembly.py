@@ -123,12 +123,12 @@ class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
         braincontrol, braincomm, brainfile, brainconf = self._load_brain()
 
         # load external modules
-        externalmodulearray = ExternalModuleManager()
+        external_module_manager = ExternalModuleManager()
 
         # initialize the cle server and services
         logger.info("Preparing CLE Server")
         self.cle_server.cle = self.__load_cle(robotcontrol, robotcomm, braincontrol, braincomm,
-                                              brainfile, brainconf, externalmodulearray,
+                                              brainfile, brainconf, external_module_manager,
                                               robot_poses, models, lights)
         self.cle_server.prepare_simulation(except_hook)
 
