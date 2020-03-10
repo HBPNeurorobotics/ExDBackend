@@ -349,7 +349,7 @@ class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
 
     # pylint: disable=too-many-arguments
     def __load_cle(self, roscontrol, roscomm, braincontrol, braincomm,
-                   brain_file_path, neurons_config, externalmodulearray,
+                   brain_file_path, neurons_config, external_module_manager,
                    robot_poses, models, lights):
         """
         Load the ClosedLoopEngine and initializes all interfaces
@@ -360,7 +360,7 @@ class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
         :param braincomm Brain Communication Adapter to use
         :param brain_file_path Accessible path to brain file
         :param neurons_config Neuron configuration specified in the BIBI
-        :param externalmodulearray IBA Manager
+        :param external_module_manager External IBA Module Manager
         :param robot_post Initial robot pose
         :param models Initial models loaded into the environment
         :param lights Initial lights loaded into the environment
@@ -388,7 +388,7 @@ class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
 
         cle = DeterministicClosedLoopEngine(roscontrol, roscomm, braincontrol,
                                             braincomm, tfmanager,
-                                            externalmodulearray, timestep)
+                                            external_module_manager, timestep)
 
         if brain_file_path:
             cle.initialize(brain_file_path, **neurons_config)
