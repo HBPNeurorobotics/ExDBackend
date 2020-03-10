@@ -122,7 +122,7 @@ class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
         # load the brain
         braincontrol, braincomm, brainfile, brainconf = self._load_brain()
 
-        #load external modules
+        # load external modules
         externalmodulearray = ExternalModuleManager()
 
         # initialize the cle server and services
@@ -360,6 +360,7 @@ class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
         :param braincomm Brain Communication Adapter to use
         :param brain_file_path Accessible path to brain file
         :param neurons_config Neuron configuration specified in the BIBI
+        :param externalmodulearray IBA Manager
         :param robot_post Initial robot pose
         :param models Initial models loaded into the environment
         :param lights Initial lights loaded into the environment
