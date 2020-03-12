@@ -92,6 +92,7 @@ class MockOs(object):
 @patch("hbp_nrp_cleserver.server.GazeboSimulationAssembly.LocalGazeboBridgeInstance", new=Mock())
 @patch("hbp_nrp_cle.cle.DeterministicClosedLoopEngine.GazeboHelper", new=MockedGazeboHelper)
 @patch("hbp_nrp_cleserver.server.CLEGazeboSimulationAssembly.ClosedLoopEngine", new=MockedClosedLoopEngine())
+@patch("hbp_nrp_cleserver.server.CLEGazeboSimulationAssembly.ExternalModuleManager", new=MagicMock())
 @patch("hbp_nrp_cleserver.server.CLEGazeboSimulationAssembly.tfm", new=Mock())
 @patch("hbp_nrp_cleserver.server.CLEGazeboSimulationAssembly.SimUtil.find_file_in_paths", new=Mock(return_value=("/a/robot/under/the/rainbow/model.sdf")))
 @patch("hbp_nrp_cleserver.server.CLEGazeboSimulationAssembly.os.listdir", new=Mock(return_value=[]))
