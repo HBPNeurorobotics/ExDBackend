@@ -38,6 +38,7 @@ import sys
 from std_srvs.srv import Empty
 import textwrap
 import re
+import struct
 
 from ._ExcBibiHandler import ExcBibiHandler
 from ._RobotCallHandler import RobotCallHandler
@@ -362,8 +363,23 @@ class ROSCLEServer(SimulationServer):
         :param parameters: A parameter dictionary
         :return: A list of ROS-compatible neuron parameters
         """
-        return [NeuronParameter(str(k), v)
-                for k, v in parameters.iteritems() if isinstance(v, float)]
+        ros_parameters = []
+        for k, v in parameters.iteritems():
+            if isinstance(v, float):
+                try:
+                    # tests if it can be packaged as float. This operation is performed by ROS
+                    # service proxy before # sending a request
+                    struct.pack('<f', v)
+                except OverflowError:
+                    # replaces v by maximum float which can be packaged. More info here:
+                    # https://mail.python.org/pipermail/python-list/2000-March/058582.html
+                    v = 3.4e38
+                    logger.info("Neuron Parameter {} with value {} can't be converted to a "
+                                "ROS type".format(k, v))
+                finally:
+                    ros_parameters += [NeuronParameter(str(k), v)]
+
+        return ros_parameters
 
     # pylint: disable=unused-argument, no-self-use
     def __get_brain(self, request):
