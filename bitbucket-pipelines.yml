@@ -11,6 +11,7 @@ pipelines:
     - step:
         max-time: 30
         name: Build
+        size: 2x
         script:
           # Branch dependencies (ex-gerrit topic)
           - git archive --remote=ssh://git@bitbucket.org/hbpneurorobotics/admin-scripts.git refs/heads/master nrp_branch_topic_checkout | tar xf -
