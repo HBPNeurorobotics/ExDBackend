@@ -29,7 +29,6 @@ import logging
 import os
 import sys
 import subprocess
-logger = logging.getLogger(__name__)
 
 from RestrictedPython import compile_restricted
 from hbp_nrp_backend import NRPServicesGeneralException
@@ -38,12 +37,18 @@ from hbp_nrp_commons.sim_config.SimConfig import ResourceType
 from hbp_nrp_commons.workspace.SimUtil import SimUtil
 from hbp_nrp_cleserver.server.GazeboSimulationAssembly import GazeboSimulationAssembly
 from hbp_nrp_commons.ZipUtil import ZipUtil
+from hbp_nrp_backend import get_date_and_time_string
 
 # These imports start NEST.
 from hbp_nrp_cleserver.server.ROSCLEServer import ROSCLEServer
 from hbp_nrp_cle.cle.ClosedLoopEngine import DeterministicClosedLoopEngine, ClosedLoopEngine
 import hbp_nrp_cle.tf_framework as tfm
 import hbp_nrp_cle.brainsim.config as brainconfig
+from cle_ros_msgs import srv
+from hbp_nrp_cle.cle.DeterministicClosedLoopEngineProfiler import \
+    DeterministicClosedLoopEngineProfiler
+
+logger = logging.getLogger(__name__)
 
 
 class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
@@ -60,6 +65,8 @@ class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
         self.cle_server = None
         self.simAssetsDir = os.path.join(sim_config.sim_dir, 'assets')
         self._simResourcesDir = os.path.join(sim_config.sim_dir, 'resources')
+        self._simProfilerDir = ''
+        self._sim_profiler_mode = sim_config.profiler
 
         self._storageClient = StorageClient()
         self._storageClient.set_sim_dir(sim_config.sim_dir)
@@ -380,9 +387,21 @@ class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
         # initialize CLE
         self._notify("Initializing CLE")
 
-        cle = DeterministicClosedLoopEngine(roscontrol, roscomm,
-                                            braincontrol, braincomm,
-                                            tfmanager, timestep)
+        if self._sim_profiler_mode == srv.CreateNewSimulationRequest.PROFILER_CLE_STEP or \
+                self._sim_profiler_mode == srv.CreateNewSimulationRequest.PROFILER_CPROFILE:
+            # creates a folder in sim_dir to store profiler data and passes it to the CLE
+            self._simProfilerDir = '_'.join(['profiler_data', get_date_and_time_string()])
+            profile_tmp_dir = str(os.path.join(self.sim_dir, self._simProfilerDir))
+            SimUtil.makedirs(profile_tmp_dir)
+
+            cle = DeterministicClosedLoopEngineProfiler(roscontrol, roscomm,
+                                                        braincontrol, braincomm, tfmanager,
+                                                        timestep, self._sim_profiler_mode,
+                                                        profile_tmp_dir)
+        else:
+            cle = DeterministicClosedLoopEngine(roscontrol, roscomm,
+                                                braincontrol, braincomm,
+                                                tfmanager, timestep)
 
         if brain_file_path:
             cle.initialize(brain_file_path, **neurons_config)
@@ -456,6 +475,21 @@ class CLEGazeboSimulationAssembly(GazeboSimulationAssembly):
 
             self.robotManager.shutdown()
             self.cle_server.shutdown()
+
+            # copy cProfile stats to Storage
+            if self._simProfilerDir:
+                profile_tmp_dir = str(os.path.join(self.sim_dir, self._simProfilerDir))
+                folder_uuid = self.storage_client.create_folder(self.sim_config.token,
+                                                                self.sim_config.experiment_id,
+                                                                self._simProfilerDir)['uuid']
+
+                for f_name in os.listdir(profile_tmp_dir):
+                    f_path = str(os.path.join(profile_tmp_dir, f_name))
+                    with open(f_path, 'rb') as f:
+                        self.storage_client.create_or_update(
+                            self.sim_config.token, folder_uuid, f_name,
+                            f.read(), 'application/octet-stream')
+
         # pylint: disable=broad-except
         except Exception, e:
             logger.error("The cle server could not be shut down")

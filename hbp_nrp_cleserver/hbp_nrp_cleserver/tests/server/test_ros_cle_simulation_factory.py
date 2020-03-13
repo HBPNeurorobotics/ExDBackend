@@ -64,6 +64,7 @@ class TestROSCLESimulationFactory(unittest.TestCase):
         token = None
         ctx_id = None
         experiment_id = None
+        profiler = 0
 
     @patch('hbp_nrp_cleserver.server.ROSCLESimulationFactory.logger')
     def setUp(self, mocked_logger):

@@ -157,6 +157,7 @@ class ROSCLESimulationFactory(object):
         ctx_id = service_request.ctx_id
         experiment_id = service_request.experiment_id
         brain_processes = service_request.brain_processes
+        profiler = service_request.profiler
 
         sim_config = SimConfig(exc_config_file,
                                sim_id=sim_id,
@@ -168,7 +169,8 @@ class ROSCLESimulationFactory(object):
                                context_id=ctx_id,
                                token=token,
                                experiment_id=experiment_id,
-                               brain_processes=brain_processes)
+                               brain_processes=brain_processes,
+                               profiler=profiler)
 
         # simulation playback
         if playback_path:

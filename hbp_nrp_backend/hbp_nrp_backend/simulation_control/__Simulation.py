@@ -59,7 +59,8 @@ class Simulation(object):
                  private=False,
                  playback_path=None,
                  ctx_id=None,
-                 token=None):
+                 token=None,
+                 profiler='disabled'):
         """
         Creates a new simulation
 
@@ -80,6 +81,8 @@ class Simulation(object):
         :param ctx_id: (optional) The context id of the collab if we are running a collab based
                        simulation
         :param token: the request token
+        :param profiler: indicates the profiler mode for the simulation: disabled,
+                         cle_step, cprofile
         """
         self.__sim_id = sim_id
         self.__owner = owner
@@ -95,6 +98,7 @@ class Simulation(object):
         self.__playback_path = playback_path
         self.__timeout_type = None
         self.__token = token
+        self.__profiler = profiler
 
         # enable the full dynamic backend lifecycle for non-playback launches
         if playback_path is None:
@@ -104,6 +108,13 @@ class Simulation(object):
 
         self.__private = private
         self.__ctx_id = ctx_id
+
+    @property
+    def profiler(self):
+        """
+        :return: profiler mode for this simulation: disabled, cle_step, cprofile
+        """
+        return self.__profiler
 
     @property
     def ctx_id(self):

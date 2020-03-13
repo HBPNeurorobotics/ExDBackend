@@ -104,6 +104,7 @@ class SimulationService(Resource):
         ],
     )
     def post(self):
+        # pylint: disable=R0914
         """
         Creates a new simulation which is neither 'initialized' nor 'started'.
         :< json int brainProcesses: Number of brain processes to use (overrides ExD Configuration)
@@ -124,6 +125,8 @@ class SimulationService(Resource):
         :> json string creationDate: Date of creation of this simulation
         :> json string creationUniqueID: The simulation unique creation ID that is used by the
                                          Frontend to identify this simulation
+        :> json string profiler: indicates the profiler mode for the simulation: disabled,
+                                 cle_step, cprofile
 
         :status 400: Experiment configuration is not valid
         :status 401: gzserverHost is not valid
@@ -149,33 +152,39 @@ class SimulationService(Resource):
                      or body.get('brainProcesses') < 1):
                 raise NRPServicesClientErrorException('Invalid number of brain processes.')
 
-            sim_gzserver_host = body.get('gzserverHost', 'local')
-            sim_reservation = body.get('reservation', None)
-            sim_experiment_id = body.get('experimentID', None)
-            sim_state = body.get('state', 'created')
-            playback_path = body.get('playbackPath', None)
-            sim_owner = UserAuthentication.get_user()
-            sim_brain_processes = body.get('brainProcesses', 1)
-            private = body.get('private', False)
-            ctx_id = body.get('ctxId', None)
-            token = UserAuthentication.get_header_token()
+            if ('profiler' in body) and (body.get('profiler') not in ['disabled', 'cle_step',
+                                                                      'cprofile']):
+                raise NRPServicesClientErrorException('Invalid profiler mode.', error_code=400)
 
-            sim = Simulation(sim_id,
-                             sim_experiment_id,
-                             sim_owner,
-                             sim_gzserver_host,
-                             sim_reservation,
-                             sim_brain_processes,
-                             sim_state,
-                             playback_path=playback_path,
-                             private=private,
-                             ctx_id=ctx_id,
-                             token=token)
+        sim_gzserver_host = body.get('gzserverHost', 'local')
+        sim_reservation = body.get('reservation', None)
+        sim_experiment_id = body.get('experimentID', None)
+        sim_state = body.get('state', 'created')
+        playback_path = body.get('playbackPath', None)
+        sim_owner = UserAuthentication.get_user()
+        sim_brain_processes = body.get('brainProcesses', 1)
+        private = body.get('private', False)
+        ctx_id = body.get('ctxId', None)
+        token = UserAuthentication.get_header_token()
+        profiler = body.get('profiler', 'disabled')
 
-            # TODO: remove me. I probably am not used anywhere
-            sim.creationUniqueID = body.get('creationUniqueID', str(time.time() + random.random()))
+        sim = Simulation(sim_id,
+                         sim_experiment_id,
+                         sim_owner,
+                         sim_gzserver_host,
+                         sim_reservation,
+                         sim_brain_processes,
+                         sim_state,
+                         playback_path=playback_path,
+                         private=private,
+                         ctx_id=ctx_id,
+                         token=token,
+                         profiler=profiler)
 
-            simulations.append(sim)
+        # TODO: remove me. I probably am not used anywhere
+        sim.creationUniqueID = body.get('creationUniqueID', str(time.time() + random.random()))
+
+        simulations.append(sim)
 
         sim.state = "initialized"
 

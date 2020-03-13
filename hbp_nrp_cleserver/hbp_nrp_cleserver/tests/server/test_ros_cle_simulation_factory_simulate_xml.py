@@ -54,6 +54,7 @@ class MockedServiceRequest(object):
     token = None
     ctx_id = None
     experiment_id = None
+    profiler = 0
 
 
 class MockedGazeboHelper(object):
