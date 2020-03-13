@@ -19,7 +19,7 @@ pipelines:
           - cd $BITBUCKET_CLONE_DIR
 
           # This plan depends on GazeboRosPackages being built
-          - pushd $HBP/GazeboRosPackages && rm -rf build && catkin_make && popd && cd $BITBUCKET_CLONE_DIR
+          - pushd $HBP/GazeboRosPackages && rm -rf build devel && catkin_make && popd && cd $BITBUCKET_CLONE_DIR
 
           # Configure build has to be placed before make devinstall
           - export VIRTUAL_ENV_PATH=$VIRTUAL_ENV
