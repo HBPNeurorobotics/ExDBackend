@@ -27,12 +27,15 @@ start a simulation.
 """
 
 import rospy
+import logging
 # This package comes from the catkin package ROSCLEServicesDefinitions
 # in the root folder of the GazeboRosPackage repository.
 from cle_ros_msgs import srv
 from hbp_nrp_backend.cle_interface import SERVICE_CREATE_NEW_SIMULATION
 
 __author__ = "Lorenzo Vannucci, Stefan Deser, Daniel Peppicelli"
+
+logger = logging.getLogger(__name__)
 
 
 class ROSCLESimulationFactoryClient(object):
@@ -56,12 +59,21 @@ class ROSCLESimulationFactoryClient(object):
     # pylint: disable=too-many-arguments
     def create_new_simulation(self, experiment_conf, gzserver_host,
                               reservation, brain_processes, sim_id, timeout, timeout_type,
-                              playback_path, token, ctx_id, experiment_id):
+                              playback_path, token, ctx_id, experiment_id, profiler):
         """
-        Start the simulation.
+        Creates a new simulation.
         """
+
+        profiler_req = srv.CreateNewSimulationRequest.PROFILER_DISABLED
+        if profiler == 'cle_step':
+            profiler_req = srv.CreateNewSimulationRequest.PROFILER_CLE_STEP
+        elif profiler == 'cprofile':
+            profiler_req = srv.CreateNewSimulationRequest.PROFILER_CPROFILE
+        elif profiler != 'disabled':
+            logger.warn('Profiler mode "{}" not supported, disabling profiler'.format(profiler))
+
         self.__create_new_simulation_service(experiment_conf,
                                              gzserver_host, reservation,
                                              brain_processes, sim_id, timeout,
                                              timeout_type, playback_path, token,
-                                             ctx_id, experiment_id)
+                                             ctx_id, experiment_id, profiler_req)

@@ -160,6 +160,17 @@ class TestSimulationService(RestTest):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(len(simulations), 0)
 
+    def test_simulation_service_wrong_profile(self):
+        rqdata = {
+            "experimentID": "my_cloned_experiment",
+            "gzserverHost": "local",
+            "profiler": "not_a_profile_mode"
+        }
+        response = self.client.post('/simulation', data=json.dumps(rqdata))
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(len(simulations), 0)
+
     def test_simulation_service_another_sim_running(self):
         rqdata = {
             "experimentID": "my_cloned_experiment",

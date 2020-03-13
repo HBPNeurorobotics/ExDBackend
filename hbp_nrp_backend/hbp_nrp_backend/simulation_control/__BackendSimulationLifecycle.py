@@ -191,7 +191,8 @@ class BackendSimulationLifecycle(SimulationLifecycle):
                 simulation.playback_path,
                 UserAuthentication.get_header_token(),
                 self.simulation.ctx_id,
-                self.simulation.experiment_id
+                self.simulation.experiment_id,
+                self.simulation.profiler
             )
             if not simulation.playback_path:
                 simulation.cle = ROSCLEClient(simulation.sim_id)

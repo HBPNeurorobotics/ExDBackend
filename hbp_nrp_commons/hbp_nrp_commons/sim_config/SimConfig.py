@@ -37,6 +37,7 @@ from hbp_nrp_commons.workspace.Settings import Settings
 from hbp_nrp_commons.generated import bibi_api_gen as bibi_parser, exp_conf_api_gen as exc_parser
 from hbp_nrp_cleserver.bibi_config.bibi_configuration_script import (get_all_neurons_as_dict)
 from hbp_nrp_cleserver.bibi_config.bibi_configuration_script import (generate_tf, get_tf_name)
+from cle_ros_msgs.srv import CreateNewSimulationRequest
 
 __author__ = 'Hossain Mahmud'
 
@@ -196,6 +197,7 @@ class SimConfig(object):
 
         self._simulation_type = None
         self._num_brain_processes = params.get('brain_processes', None)
+        self._profiler = params.get('profiler', CreateNewSimulationRequest.PROFILER_DISABLED)
 
         # paths from system config
         self._model_paths = [self._sim_dir]
@@ -416,6 +418,13 @@ class SimConfig(object):
         """
         # pylint: disable=no-self-use
         raise AttributeError("Direct use of bibi DOM object inside CLE is forbidden")
+
+    @property
+    def profiler(self):
+        """
+        Returns the profiler mode for this simulation
+        """
+        return self._profiler
 
     @property
     def token(self):
