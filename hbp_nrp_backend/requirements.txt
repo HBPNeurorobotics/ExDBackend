@@ -11,5 +11,5 @@ timeout-decorator==0.3.2
 urllib3[secure]==1.21.1
 ptvsd==3.0.0
 requests
-cryptography==2.4.2
+cryptography==3.2
 backports.functools_lru_cache==1.5
