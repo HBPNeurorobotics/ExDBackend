@@ -1,5 +1,5 @@
 # other requirements
-lxml==3.4.0
+lxml==4.9.1
 PyYAML==3.11
 rospkg==1.0.38
 catkin_pkg==0.2.10
